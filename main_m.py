@@ -17,7 +17,7 @@ import math
 import time
 import os
 
-
+#TODO: РАЗДЕЛИТЬ БОТА НА ФАЙЛЫ
 def generate():
     next_answer = math.floor(time.time()) + (60 * 60 * 24)
     return next_answer
