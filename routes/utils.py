@@ -40,48 +40,13 @@ def filling_template(values_dict, class_name):
     wb = openpyxl.load_workbook(filename=f'attachments/Template_{class_name}.xlsx')
     sheet = wb['Лист1']
     week_date = datetime.datetime.today().weekday()
-    if week_date == 0:
-        sheet['f12'] = datetime.datetime.now().strftime('%d')
-        for value in values_dict:
-            sheet.cell(row=x, column=6).value = value
-            x += 1
-            wb.save(f'attachments/Template_{class_name}.xlsx')
-            wb.close()
-    elif week_date == 1:
-        sheet['g12'] = datetime.datetime.now().strftime('%d')
-        for value in values_dict:
-            sheet.cell(row=x, column=7).value = value
-            x += 1
-            wb.save(f'attachments/Template_{class_name}.xlsx')
-            wb.close()
-    elif week_date == 2:
-        sheet['h12'] = datetime.datetime.now().strftime('%d')
-        for value in values_dict:
-            sheet.cell(row=x, column=8).value = value
-            x += 1
-            wb.save(f'attachments/Template_{class_name}.xlsx')
-            wb.close()
-    elif week_date == 3:
-        sheet['i12'] = datetime.datetime.now().strftime('%d')
-        for value in values_dict:
-            sheet.cell(row=x, column=9).value = value
-            x += 1
-            wb.save(f'attachments/Template_{class_name}.xlsx')
-            wb.close()
-    elif week_date == 4:
-        sheet['j12'] = datetime.datetime.now().strftime('%d')
-        for value in values_dict:
-            sheet.cell(row=x, column=10).value = value
-            x += 1
-            wb.save(f'attachments/Template_{class_name}.xlsx')
-            wb.close()
-    elif week_date == 5:
-        sheet['k12'] = datetime.datetime.now().strftime('%d')
-        for value in values_dict:
-            sheet.cell(row=x, column=11).value = value
-            x += 1
-            wb.save(f'attachments/Template_{class_name}.xlsx')
-            wb.close()
+    columns = ['f', 'g', 'h', 'i', 'j', 'k']
+    sheet[f'{columns[week_date]}12'] = datetime.datetime.now().strftime('%d')
+    for value in values_dict:
+        sheet.cell(row=x, column=(6 + week_date)).value = value
+        x += 1
+        wb.save(f'attachments/Template_{class_name}.xlsx')
+        wb.close()
 
 
 def create_template(doc):
