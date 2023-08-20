@@ -17,12 +17,15 @@ async def tabel_sender(event: Message):
 @bl.private_message(text=['@add_teacher <add_teach_args>', '@добавить учителя <add_teach_args>'])
 async def add_teacher(event: Message, add_teach_args):
     if (await event.get_user(id)).get('id') == admin_id:
-        global add_teacher_name, add_class_name, add_vk_id, add_email
-        add_teacher_name, add_class_name, add_vk_id, add_email = add_teach_args.split(', ')
-        await event.answer(
-            message=f'Вы хотите добавить учителя |{add_teacher_name}|\n( @{add_class_name} ) {add_vk_id} ({add_email}) '
-                    f'класса. Если все данные верны, подтвердите',
-            keyboard=confirm_keyboard_2)
+        if add_teach_args == "help":
+            await event.answer(message="ФИО | Класс | VK-ID | Почта")
+        else:
+            global add_teacher_name, add_class_name, add_vk_id, add_email
+            add_teacher_name, add_class_name, add_vk_id, add_email = add_teach_args.split(', ')
+            await event.answer(
+                message=f'Вы хотите добавить учителя |{add_teacher_name}|\n( @{add_class_name} ) {add_vk_id} ({add_email}) '
+                        f'класса. Если все данные верны, подтвердите',
+                keyboard=confirm_keyboard_2)
 
 
 @bl.raw_event(GroupEventType.MESSAGE_EVENT, dataclass=GroupTypes.MessageEvent)

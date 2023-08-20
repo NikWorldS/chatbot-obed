@@ -17,7 +17,9 @@ main_keyboard = {
     Keyboard()
     .add(Text('Выведи табель'), KeyboardButtonColor.POSITIVE)
     .row()
+    .add(Text("Помощь"), KeyboardButtonColor.PRIMARY)
     .add(Text('Список платников'))
+    .row()
     .add(Text('Настройки'))
 }
 
@@ -31,4 +33,15 @@ settings_keyboard_false = {
     Keyboard()
     .add(Text('Напоминалка'), KeyboardButtonColor.NEGATIVE)
     .add(Text('Назад'), KeyboardButtonColor.NEGATIVE)
+}
+
+help_keyboard = {
+    Keyboard()
+    .add(Text("Как добавить табель?"), KeyboardButtonColor.PRIMARY)
+    .add(Text("Как написать кого нет?"),KeyboardButtonColor.PRIMARY)
+    .row()
+    .add(Text("Как вывести табель?"), KeyboardButtonColor.PRIMARY)
+    .add(Text("Имеется вопрос?"),KeyboardButtonColor.PRIMARY)
+    .row()
+    .add(Text("Назад"), KeyboardButtonColor.NEGATIVE)
 }

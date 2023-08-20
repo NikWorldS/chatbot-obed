@@ -3,19 +3,22 @@ from routes import labelers
 import sqlite3 as sq
 from vkbottle import Bot
 from routes.utils import *
-from routes.constants import admin_id
-from config import token
+from dotenv import load_dotenv, find_dotenv
 from art import tprint
+import os
 import datetime
 import math
 import time
 
+load_dotenv(find_dotenv())
+bot = Bot(os.getenv('TOKEN'))
+admin_id = int(os.getenv('ADMIN_ID'))
+print(admin_id)
 tprint('LOADED', font='5lineoblique')
 
-bot = Bot(token)
 
-for custom_labeler in labelers:
-    bot.labeler.load(custom_labeler)
+# for custom_labeler in labelers:
+#     bot.labeler.load(custom_labeler)
 
 
 @bot.loop_wrapper.interval(seconds=5)
@@ -74,9 +77,11 @@ async def announce_handler(message: Message, announcement):
             data.append(i[0].replace('id', ''))
         data.remove(str(admin_id))
         conn.close()
-        await bot.api.messages.send(random_id=0, peer_ids=data, message=announcement)
+        await bot.api.messages.send(random_id=0, peer_ids=data, message=f"📢 Объявление: {announcement}")
         await message.answer(message='Объявление было отправлено')
 
+for custom_labeler in labelers:
+    bot.labeler.load(custom_labeler)
 
 if __name__ == "__main__":
     bot.run_forever()

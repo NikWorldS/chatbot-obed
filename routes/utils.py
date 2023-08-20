@@ -32,7 +32,6 @@ def create_list_payers(class_name):
         x += 1
     wb.close()
     return payers_list
-    pass
 
 
 def filling_template(values_dict, class_name):
@@ -95,9 +94,12 @@ def create_template(doc):
         class_name = sheet['d3'].value
         wb.save(f'attachments/Template_{class_name}.xlsx')
         wb.close()
+        return "Файл принят"
 
     except Exception as create_error:
-        return f'Во время создания возникла ошибка ({create_error})'
+        return f'Во время создания табеля возникла ошибка ({create_error})'
+    finally:
+        os.remove(doc)
 
 
 def clear_template(class_name, date_today):
@@ -118,6 +120,9 @@ def clear_template(class_name, date_today):
 
     wb.save(f'attachments/Template_{class_name}.xlsx')
     wb.close()
+
+    if not os.path.isdir(f"archive/class_{class_name}"):
+        os.mkdir(f"archive/class_{class_name}")
 
     shutil.copy(f'attachments/Tabel_{class_name}_{date_today}.xlsx',
                 f'archive/class_{class_name}/Tabel_{class_name}_{date_today}.xlsx')
@@ -176,8 +181,8 @@ def send_tabel(class_name=None, mail=None):
             file.add_header('content-disposition', 'attachment', filename=filename)
             msg.attach(file)
 
-        server.sendmail(from_mail, to_email, msg.as_string())
         clear_template(class_name, date_today)
+        server.sendmail(from_mail, to_email, msg.as_string())
 
         server.close()
         return f'Табель отправлен на почту'

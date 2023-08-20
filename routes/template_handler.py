@@ -8,12 +8,7 @@ admin_id = 323048042
 bl = BotLabeler()
 
 
-@bl.message(text='a')
-async def test(event: Message):
-    await event.answer('a')
-
-
-@bl.private_message(text='/табель')
+@bl.private_message(text=['/табель', ".табель"])
 async def create_layout(event: Message):
     attach = event.attachments
 
@@ -28,8 +23,8 @@ async def create_layout(event: Message):
             response = requests.get(document.url)
             with open(document.title, "wb") as f:
                 f.write(response.content)
-            create_template(document.title)
-            await event.answer(f"Файл принят")
+            create_temp = create_template(f"{document.title}")
+            await event.answer(create_temp)
         elif type_f != 'xlsx':
             await event.answer(
                 f'Возможно, отправленный файл не является табелем.\nЕсли ошибка повторяется, напишите @id{admin_id}')
@@ -39,6 +34,9 @@ async def create_layout(event: Message):
 
 @bl.private_message(text='. <missing>')
 async def filling_tabel(event: Message, missing):
+    if datetime.datetime.today().weekday() == 6:
+        await event.answer(message="Сегодня воскресенье, ничего записываться не будет")
+        return
     payers_dict = {}
 
     id_user = f"id{(await event.get_user(id)).get('id')}"
