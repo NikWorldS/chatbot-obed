@@ -64,4 +64,4 @@ async def filling_tabel(event: Message, missing):
     conn.close()
     values_list = list(payers_dict.values())
     filling_template(values_list, class_n)
-    await event.answer(f"Сегодня {len(values_list) - values_list.count('н')} платников")
+    await event.answer(f"Сегодня {len(values_list) - values_list.count('н')} из {len(values_list)} платников")

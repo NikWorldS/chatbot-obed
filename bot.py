@@ -13,12 +13,9 @@ import time
 load_dotenv(find_dotenv())
 bot = Bot(os.getenv('TOKEN'))
 admin_id = int(os.getenv('ADMIN_ID'))
-print(admin_id)
+
 tprint('LOADED', font='5lineoblique')
 
-
-# for custom_labeler in labelers:
-#     bot.labeler.load(custom_labeler)
 
 
 @bot.loop_wrapper.interval(seconds=5)
@@ -57,12 +54,12 @@ async def reminder():
         conn.close()
 
 
-@bot.on.private_message(text=['/репорт <ticket>', 'репорт <ticket>'])
+@bot.on.private_message(text=['/репорт <ticket>', '.репорт <ticket>'])
 async def report_handler(message: Message, ticket):
     user_data = await bot.api.users.get(message.from_id)
     await bot.api.messages.send(random_id=0, peer_id=admin_id,
                                 message=f'У @id{user_data[0].id}({user_data[0].first_name}'
-                                        f' {user_data[0].last_name}) возникла проблема: {ticket}')
+                                        f'|@id{admin_id}| Сообщение от пользователя {user_data[0].last_name}: {ticket}')
 
 
 @bot.on.private_message(text='/ad <announcement>')
