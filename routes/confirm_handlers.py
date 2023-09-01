@@ -18,12 +18,12 @@ async def tabel_sender(event: Message):
 async def add_teacher(event: Message, add_teach_args):
     if (await event.get_user(id)).get('id') == admin_id:
         if add_teach_args == "help":
-            await event.answer(message="ФИО | Класс | VK-ID | Почта")
+            await event.answer(message="ФИО | Класс | idVK-ID | Почта")
         else:
             global add_teacher_name, add_class_name, add_vk_id, add_email
             add_teacher_name, add_class_name, add_vk_id, add_email = add_teach_args.split(', ')
             await event.answer(
-                message=f'Вы хотите добавить учителя |{add_teacher_name}|\n( @{add_class_name} ) {add_vk_id} ({add_email}) '
+                message=f'Вы хотите добавить учителя @{add_vk_id}({add_teacher_name})\n {add_class_name} класса (почта: {add_email}) '
                         f'класса. Если все данные верны, подтвердите',
                 keyboard=confirm_keyboard_2)
 

@@ -1,4 +1,4 @@
-from vkbottle.bot import Message
+from vkbottle.bot import Message, MessageEvent
 from routes import labelers
 import sqlite3 as sq
 from vkbottle import Bot
@@ -21,11 +21,11 @@ tprint('LOADED', font='5lineoblique')
 @bot.loop_wrapper.interval(seconds=5)
 async def reminder():
     date_today = datetime.datetime.today().date()
-    readable_time = int(time.mktime(time.strptime(f"{date_today}  12:00:00", "%Y-%m-%d %H:%M:%S")))
+    readable_time = int(time.mktime(time.strptime(f"{date_today}  10:00:00", "%Y-%m-%d %H:%M:%S")))
     weekday_today = datetime.date.today().weekday()
     if weekday_today == 6:
         return
-    if weekday_today == 5:
+    if weekday_today == 5 and math.floor(time.time()) >= readable_time:
         conn = sq.connect("teachers.sqlite")
         cur = conn.cursor()
 
@@ -55,11 +55,13 @@ async def reminder():
 
 
 @bot.on.private_message(text=['/репорт <ticket>', '.репорт <ticket>'])
-async def report_handler(message: Message, ticket):
+async def report_handler(message: Message,  ticket):
     user_data = await bot.api.users.get(message.from_id)
+    await bot.api.messages.send(random_id=0, peer_id=user_data[0].id, message="Ваше сообщение было отправлено")
     await bot.api.messages.send(random_id=0, peer_id=admin_id,
-                                message=f'У @id{user_data[0].id}({user_data[0].first_name}'
-                                        f'|@id{admin_id}| Сообщение от пользователя {user_data[0].last_name}: {ticket}')
+                                message=f'@id{admin_id}\n'
+                                        f'У @id{user_data[0].id}({user_data[0].first_name}) возник вопрос: {ticket}')
+
 
 
 @bot.on.private_message(text='/ad <announcement>')
