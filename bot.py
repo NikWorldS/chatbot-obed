@@ -26,30 +26,30 @@ async def reminder():
     if weekday_today == 6:
         return
     if weekday_today == 5 and math.floor(time.time()) >= readable_time:
-        conn = sq.connect("teachers.sqlite")
+        conn = sq.connect("teachers_db.sqlite")
         cur = conn.cursor()
 
-        (cur.execute(f'''SELECT vk_id FROM `teachers_table` WHERE reminder = TRUE AND {readable_time + 43200} >= 
-                next_answer AND class_name LIKE "1%"'''))
+        (cur.execute(f'''SELECT teacher_vk_id FROM `teachers_table` WHERE reminder = TRUE AND {readable_time + 43200} >= 
+                next_answer_time AND class_name LIKE "1%"'''))
         answer = cur.fetchall()
         for teacher in answer:
             await bot.api.messages.send(peer_id=teacher[0].replace('id', ''),
                                         message="Не забудь написать кого сегодня нет!", random_id=0)
-            cur.execute(f'''UPDATE teachers_table SET next_answer = {generate()} WHERE vk_id = "{teacher[0]}"''')
+            cur.execute(f'''UPDATE teachers_table SET next_answer_time = {generate()} WHERE teacher_vk_id = "{teacher[0]}"''')
             conn.commit()
             conn.close()
     if math.floor(time.time()) >= readable_time:
-        conn = sq.connect("teachers.sqlite")
+        conn = sq.connect("teachers_db.sqlite")
         cur = conn.cursor()
 
-        (cur.execute(f'''SELECT vk_id FROM `teachers_table` WHERE reminder = TRUE AND {readable_time + 43200} >= 
-        next_answer'''))
+        (cur.execute(f'''SELECT teacher_vk_id FROM `teachers_table` WHERE reminder = TRUE AND {readable_time + 43200} >= 
+        next_answer_time'''))
         answer = cur.fetchall()
 
         for teacher in answer:
             await bot.api.messages.send(peer_id=teacher[0].replace('id', ''),
                                         message="Не забудь написать кого сегодня нет!", random_id=0)
-            cur.execute(f'''UPDATE teachers_table SET next_answer = {generate()} WHERE vk_id = "{teacher[0]}"''')
+            cur.execute(f'''UPDATE teachers_table SET next_answer_time = {generate()} WHERE teacher_vk_id = "{teacher[0]}"''')
             conn.commit()
         conn.close()
 
@@ -67,11 +67,11 @@ async def report_handler(message: Message,  ticket):
 @bot.on.private_message(text='/ad <announcement>')
 async def announce_handler(message: Message, announcement):
     if message.from_id == admin_id:
-        conn = sq.connect("teachers.sqlite")
+        conn = sq.connect("teachers_db.sqlite")
         cur = conn.cursor()
 
         data = []
-        cur.execute('''SELECT vk_id FROM teachers_table''')
+        cur.execute('''SELECT teacher_vk_id FROM teachers_table''')
         for i in cur.fetchall():
             data.append(i[0].replace('id', ''))
         data.remove(str(admin_id))

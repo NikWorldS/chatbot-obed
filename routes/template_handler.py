@@ -2,8 +2,10 @@ from vkbottle.bot import BotLabeler, Message
 import requests
 from .utils import *
 import sqlite3 as sq
+from dotenv import load_dotenv, find_dotenv
 
-admin_id = 323048042
+load_dotenv(find_dotenv())
+admin_id = int(os.getenv('ADMIN_ID'))
 
 bl = BotLabeler()
 
@@ -41,10 +43,10 @@ async def filling_tabel(event: Message, missing):
 
     id_user = f"id{(await event.get_user(id)).get('id')}"
 
-    conn = sq.connect("teachers.sqlite")
+    conn = sq.connect("teachers_db.sqlite")
     cur = conn.cursor()
 
-    (cur.execute(f'''SELECT class_name FROM `teachers_table` WHERE vk_id == "{id_user}"'''))
+    (cur.execute(f'''SELECT class_name FROM `teachers_table` WHERE teacher_vk_id == "{id_user}"'''))
     class_n = cur.fetchone()[0].upper()
 
     missing = missing.split()
@@ -59,7 +61,7 @@ async def filling_tabel(event: Message, missing):
         else:
             payers_dict[person] = 1
 
-    cur.execute(f'''UPDATE teachers_table SET next_answer = {generate()} WHERE vk_id = "{id_user}"''')
+    cur.execute(f'''UPDATE teachers_table SET next_answer_time = {generate()} WHERE teacher_vk_id = "{id_user}"''')
     conn.commit()
     conn.close()
     values_list = list(payers_dict.values())
