@@ -3,3 +3,5 @@ test
 archive
 attachments
 teachers.sqlite
+test.py
+teachers_db.sqlite

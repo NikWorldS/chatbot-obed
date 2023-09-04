@@ -3,6 +3,7 @@ from vkbottle import GroupEventType, GroupTypes
 from .utils import *
 from .keyboards import *
 import sqlite3 as sq
+from .db_connector import execute_query, execute_insert
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
@@ -14,16 +15,12 @@ bl = BotLabeler()
 @bl.private_message(text='Выведи табель')
 async def tabel_sender(event: Message):
     id_user = f"{(await event.get_user(id)).get('id')}"
-    conn = sq.connect("teachers_db.sqlite")
-    cur = conn.cursor()
-    (cur.execute(f'''SELECT class_name FROM `teachers_table` WHERE teacher_vk_id == "id{id_user}"'''))
     try:
-        class_n = cur.fetchone()[0]
+        class_n = execute_query(f'''SELECT class_name FROM `teachers_table` WHERE teacher_vk_id = "id{id_user}"''')[0]
         await event.answer('Вы подтверждаете отправку табеля?', keyboard=confirm_keyboard)
     except Exception as sq_send_error:
         await event.answer(message=f"Похоже, произошла ошибка. data: send_error |{sq_send_error}|")
-    finally:
-        conn.close()
+
 
 
 @bl.private_message(text=['@add_teacher <add_teach_args>', '@добавить учителя <add_teach_args>'])
@@ -48,15 +45,12 @@ async def confirm_handler(event: GroupTypes.MessageEvent):
     user_id = event.object.user_id
 
     if cmd_send == 'agree_send':
-        conn = sq.connect("teachers_db.sqlite")
-        cur = conn.cursor()
 
-        (cur.execute(
-            f'''SELECT class_name, teacher_email FROM `teachers_table` WHERE teacher_vk_id == "id{user_id}"'''))
-        class_n, email = cur.fetchone()
-        conn.close()
+        class_name, email = execute_query(
+            f'''SELECT class_name, teacher_email FROM `teachers_table` WHERE teacher_vk_id = "id{user_id}"''')[0]
+        print(class_name, email)
 
-        send_tab = send_tabel(class_name=class_n, mail=email)
+        send_tab = send_tabel(class_name=class_name, mail=email)
         await event.ctx_api.messages.edit(peer_id=user_id, conversation_message_id=event.object.conversation_message_id,
                                           message=send_tab)
     elif cmd_send == 'disagree_send':
@@ -64,13 +58,9 @@ async def confirm_handler(event: GroupTypes.MessageEvent):
                                           message='Табель не отправлен')
 
     if cmd_add == 'agree_add':
-        conn = sq.connect("teachers_db.sqlite")
-        cur = conn.cursor()
-        cur.execute(
-            f'''INSERT OR IGNORE INTO teachers_table(teacher_name, teacher_vk_id, class_name, teacher_email, reminder) VALUES("
-                {add_teacher_name}", "{add_vk_id}", "{add_class_name}", "{add_email}", 0)''')
-        conn.commit()
-        conn.close()
+        execute_insert(
+            f"""INSERT IGNORE INTO teachers_table (teacher_name, teacher_vk_id, class_name, teacher_email, reminder)
+VALUES ("{add_teacher_name}", "{add_vk_id}", "{add_class_name}", "{add_email}", 0)""")
         await event.ctx_api.messages.edit(peer_id=user_id, conversation_message_id=event.object.conversation_message_id,
                                           message='Учитель добавлен в базу данных')
     elif cmd_add == 'disagree_add':

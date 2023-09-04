@@ -3,3 +3,4 @@ vkbottle==4.3.12
 python-dotenv==1.0.0
 art==6.0
 requests==2.31.0
+PyMySQL==1.1.0
